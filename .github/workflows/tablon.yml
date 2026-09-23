@@ -1,0 +1,56 @@
+name: Tablón URJC
+
+on:
+  schedule:
+    - cron: "0 6 * * *"  # 06:00 UTC = 8:00 en verano / 7:00 en invierno (hora de Madrid)
+  workflow_dispatch:  # permite lanzarlo a mano desde la pestaña Actions
+
+permissions:
+  contents: write  # para guardar estado.json en la rama "estado"
+
+concurrency:
+  group: tablon
+  cancel-in-progress: false
+
+jobs:
+  bot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: Recuperar estado
+        run: |
+          if git fetch --depth=1 origin estado; then
+            git show FETCH_HEAD:estado.json > estado.json
+          else
+            echo "No hay estado previo: primera ejecución"
+          fi
+
+      - name: Ejecutar bot
+        run: python bot.py
+        env:
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+
+      - name: Guardar estado
+        if: always()
+        run: |
+          [ -f estado.json ] || exit 0
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          tree=$(printf '100644 blob %s\testado.json\n' "$(git hash-object -w estado.json)" | git mktree)
+          parent=""
+          if git fetch --depth=1 origin estado 2>/dev/null; then
+            [ "$(git rev-parse 'FETCH_HEAD^{tree}')" = "$tree" ] && { echo "Sin cambios"; exit 0; }
+            parent="-p FETCH_HEAD"
+          fi
+          commit=$(git commit-tree "$tree" $parent -m "Actualizar estado")
+          git push origin "$commit:refs/heads/estado"

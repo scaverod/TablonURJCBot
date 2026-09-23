@@ -1,5 +1,5 @@
 .venv/
 .env
-data/
+estado.json
 __pycache__/
 *.html
