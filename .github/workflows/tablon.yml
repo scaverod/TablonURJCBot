@@ -2,7 +2,7 @@ name: Tablón URJC
 
 on:
   schedule:
-    - cron: "0 6 * * *"  # 06:00 UTC = 8:00 en verano / 7:00 en invierno (hora de Madrid)
+    - cron: "0 9 * * *"  # 09:00 UTC = 11:00 en verano / 10:00 en invierno (hora de Madrid)
   workflow_dispatch:  # permite lanzarlo a mano desde la pestaña Actions
 
 permissions:
