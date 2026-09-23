@@ -1,5 +1,27 @@
-.venv/
+# Secretos y estado local
 .env
 estado.json
+
+# Python
 __pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+build/
+dist/
+
+# Tests y herramientas
+.coverage
+.coverage.*
+htmlcov/
+.pytest_cache/
+.ruff_cache/
+
+# Editores y sistema
+.vscode/
+.idea/
+.DS_Store
+
+# Páginas del tablón descargadas para pruebas
 *.html

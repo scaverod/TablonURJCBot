@@ -1,5 +1,16 @@
 # Bot de Telegram – Tablón oficial URJC
 
+[![CI](https://github.com/scaverod/TablonURJCBot/actions/workflows/ci.yml/badge.svg)](https://github.com/scaverod/TablonURJCBot/actions/workflows/ci.yml)
+[![Resumen diario](https://github.com/scaverod/TablonURJCBot/actions/workflows/tablon.yml/badge.svg)](https://github.com/scaverod/TablonURJCBot/actions/workflows/tablon.yml)
+[![Release](https://img.shields.io/github/v/release/scaverod/TablonURJCBot)](https://github.com/scaverod/TablonURJCBot/releases/latest)
+[![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue?logo=python&logoColor=white)](https://www.python.org/)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+[![Licencia: MIT](https://img.shields.io/github/license/scaverod/TablonURJCBot)](LICENSE)
+[![Telegram](https://img.shields.io/badge/Telegram-bot-26A5E4?logo=telegram&logoColor=white)](https://core.telegram.org/bots)
+[![Último commit](https://img.shields.io/github/last-commit/scaverod/TablonURJCBot/main)](https://github.com/scaverod/TablonURJCBot/commits/main)
+[![Estrellas](https://img.shields.io/github/stars/scaverod/TablonURJCBot?style=social)](https://github.com/scaverod/TablonURJCBot/stargazers)
+[![Forks](https://img.shields.io/github/forks/scaverod/TablonURJCBot?style=social)](https://github.com/scaverod/TablonURJCBot/network/members)
+
 Cada día te manda por Telegram un resumen con los anuncios nuevos publicados en
 <https://sede.urjc.es/tablon-oficial> (título, fecha y enlace).
 
@@ -78,6 +89,19 @@ cp .env.example .env        # rellena TELEGRAM_TOKEN y TELEGRAM_CHAT_ID
 .venv/bin/python bot.py     # crea estado.json en local
 ```
 
+## Desarrollo
+
+```bash
+.venv/bin/pip install -r requirements-dev.txt
+.venv/bin/pytest --cov      # tests unitarios con cobertura
+.venv/bin/ruff check .      # lint
+```
+
+Los tests no hacen peticiones reales: la web del tablón y la API de Telegram se simulan con
+`httpx.MockTransport`. Cubren el parseo del HTML, el troceo de mensajes, los reintentos ante
+errores 429/5xx, el guardado del estado y la recuperación tras un fallo a mitad de envío.
+El workflow `CI` los ejecuta en Python 3.10–3.13 en cada push y pull request.
+
 ## Notas
 
 - GitHub desactiva los workflows programados si el repo pasa 60 días sin actividad.
@@ -92,4 +116,10 @@ cp .env.example .env        # rellena TELEGRAM_TOKEN y TELEGRAM_CHAT_ID
 
 - `tablon.py` – scraping del tablón (listado paginado y filtros)
 - `bot.py` – detecta los anuncios nuevos y manda el resumen por Telegram
+- `tests/` – tests unitarios (pytest)
 - `.github/workflows/tablon.yml` – ejecución diaria y guardado del estado
+- `.github/workflows/ci.yml` – lint y tests en cada push y pull request
+
+## Licencia
+
+[MIT](LICENSE) © 2026 Sergio Cavero
