@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from tablon import _limpia, _parse_fecha, parse_detalle, parse_pagina
+from tablon import _limpia, _parse_fecha, parse_pagina
 
 
 def fila(id_, titulo="Título", descripcion="Descripción", inicio="23/09/2026 09:45:38", fin="24/09/2027 23:59:59"):
@@ -30,29 +30,6 @@ def pagina(filas, siguiente=True):
       </table>
       <ul class="pagination"><li>{paginacion}</li></ul>
     </body></html>"""
-
-
-DETALLE = """
-<ul class="list-group">
-  <li class="list-group-item"><strong>Descripción</strong><span>Algo</span></li>
-  <li class="list-group-item"><strong>Categoría</strong>
-    <span>
-      <span>Estudiantes</span>
-      <span>Relaciones   Internacionales</span>
-    </span>
-  </li>
-  <li class="list-group-item"><strong>Emisor</strong><span> SERVICIO DE RELACIONES INTERNACIONALES </span></li>
-  <li class="list-group-item">sin etiqueta</li>
-</ul>
-<div class="annexes">
-  <div class="p-3">
-    <a class="noProxy" href="/tablon-oficial/anexo/17857/">
-      Documento de convocatoria
-      <span class="sr-only">(abre en nueva pestaña)</span>
-    </a>
-  </div>
-</div>
-"""
 
 
 class TestUtilidades:
@@ -99,21 +76,3 @@ class TestParsePagina:
 
     def test_sin_tabla(self):
         assert parse_pagina("<html><body>Mantenimiento</body></html>") == ([], False)
-
-
-class TestParseDetalle:
-    def test_extrae_campos(self):
-        d = parse_detalle(DETALLE)
-        assert d.categorias == ["Estudiantes", "Relaciones Internacionales"]
-        assert d.emisor == "SERVICIO DE RELACIONES INTERNACIONALES"
-        assert d.anexos == [("Documento de convocatoria", "https://sede.urjc.es/tablon-oficial/anexo/17857/")]
-
-    def test_categoria_sin_subspans(self):
-        html = (
-            '<ul class="list-group"><li class="list-group-item"><strong>Categoría</strong><span> PDI </span></li></ul>'
-        )
-        assert parse_detalle(html).categorias == ["PDI"]
-
-    def test_pagina_vacia(self):
-        d = parse_detalle("<html></html>")
-        assert (d.categorias, d.emisor, d.anexos) == ([], "", [])

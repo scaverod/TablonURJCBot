@@ -116,6 +116,10 @@ class TestAnunciosNuevos:
         assert [a.id for a in nuevos] == [2, 1]
         assert truncado is False
 
+    def test_falla_si_el_tablon_sale_vacio(self):
+        with pytest.raises(RuntimeError, match="HTML"):
+            asyncio.run(bot.anuncios_nuevos(TablonFalso([[]]), vistos={1, 2}))
+
     def test_corta_en_max_paginas(self, monkeypatch):
         monkeypatch.setattr(bot, "MAX_PAGINAS", 2)
         tablon = TablonFalso([[6, 5], [4, 3], [2, 1]])
@@ -197,6 +201,15 @@ class TestMain:
         asyncio.run(bot.main())
         assert len(enviados) == 1
         assert "configurado" in enviados[0]
+        assert bot.cargar_vistos() == {1, 2, 3}
+
+    def test_tablon_vacio_falla_sin_enviar_ni_tocar_el_estado(self, entorno):
+        tablon, enviados = entorno
+        tablon.ids = []
+        bot.guardar_vistos({1, 2, 3})
+        with pytest.raises(RuntimeError):
+            asyncio.run(bot.main())
+        assert enviados == []
         assert bot.cargar_vistos() == {1, 2, 3}
 
     def test_sin_novedades_no_envia(self, entorno):

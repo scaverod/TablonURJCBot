@@ -127,6 +127,12 @@ async def anuncios_nuevos(tablon: Tablon, vistos: set[int]) -> tuple[list[Anunci
     nuevos: list[Anuncio] = []
     for page in range(1, MAX_PAGINAS + 1):
         anuncios, hay_siguiente = await tablon.pagina(page)
+        if page == 1 and not anuncios:
+            # El tablón nunca está vacío: si no sale nada es que ha cambiado la web.
+            raise RuntimeError(
+                "No se ha encontrado ningún anuncio en el tablón. "
+                "Puede que haya cambiado el HTML de la web y haya que actualizar tablon.py."
+            )
         pagina_nuevos = [a for a in anuncios if a.id not in vistos]
         nuevos += pagina_nuevos
         if len(pagina_nuevos) < len(anuncios) or not hay_siguiente:

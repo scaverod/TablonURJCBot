@@ -102,6 +102,12 @@ Los tests no hacen peticiones reales: la web del tablón y la API de Telegram se
 errores 429/5xx, el guardado del estado y la recuperación tras un fallo a mitad de envío.
 El workflow `CI` los ejecuta en Python 3.10–3.13 en cada push y pull request.
 
+Las dependencias van con versión fija. Dependabot abre cada mes un pull request con las
+actualizaciones (paquetes de Python y acciones de GitHub), y el CI lo comprueba antes de aceptarlo.
+
+Si la web del tablón cambia y el bot deja de encontrar anuncios, el workflow diario falla a
+propósito para que GitHub avise por correo, en vez de quedarse callado.
+
 ## Notas
 
 - GitHub desactiva los workflows programados si el repo pasa 60 días sin actividad.
@@ -114,11 +120,12 @@ El workflow `CI` los ejecuta en Python 3.10–3.13 en cada push y pull request.
 
 ## Estructura
 
-- `tablon.py` – scraping del tablón (listado paginado y filtros)
+- `tablon.py` – scraping del listado paginado del tablón
 - `bot.py` – detecta los anuncios nuevos y manda el resumen por Telegram
 - `tests/` – tests unitarios (pytest)
 - `.github/workflows/tablon.yml` – ejecución diaria y guardado del estado
 - `.github/workflows/ci.yml` – lint y tests en cada push y pull request
+- `.github/dependabot.yml` – actualizaciones automáticas de dependencias
 
 ## Licencia
 
