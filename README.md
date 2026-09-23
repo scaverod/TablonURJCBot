@@ -16,6 +16,22 @@ Funciona gratis con **GitHub Actions**: no necesita servidor.
 - Si no hay anuncios nuevos, no manda nada.
 - La primera vez solo manda un mensaje de "configurado" (no te envía el histórico).
 
+## Límites (y qué pasa si hay muchos anuncios)
+
+| Límite | Valor | Qué hace el bot |
+| --- | --- | --- |
+| Tamaño de un mensaje de Telegram | 4096 caracteres | Parte el resumen en varios mensajes numerados (1/7, 2/7…) de ~15 anuncios cada uno. 100 anuncios ≈ 7 mensajes. |
+| Velocidad de envío de Telegram | ~1 mensaje/s por chat | Espera 1,5 s entre mensajes. Si Telegram responde "demasiadas peticiones" (429), espera lo que indique y reintenta (hasta 5 veces). |
+| Anuncios por ejecución | 500 (`MAX_PAGINAS` = 50 páginas de 10) | Si hubiera más, manda los 500 más recientes y avisa al final con el enlace al tablón. |
+| Títulos muy largos | 800 caracteres | Los recorta con "…". |
+| Duración del workflow | 10 min | 500 anuncios tardan ~1-2 min. |
+
+Si el envío falla a mitad (p. ej. Telegram caído), el estado se guarda **después de cada
+mensaje enviado**: al día siguiente solo se mandan los anuncios que faltaban, sin repetir ninguno.
+
+Probado con datos reales del tablón: 100 nuevos (7 mensajes, con un 429 intermedio), más de 500
+(se corta en 500 con aviso) y un fallo en el tercer mensaje (27 enviados + 73 al día siguiente).
+
 ## Puesta en marcha
 
 ### 1. Crear el bot en Telegram
@@ -68,6 +84,9 @@ cp .env.example .env        # rellena TELEGRAM_TOKEN y TELEGRAM_CHAT_ID
   Los commits diarios a la rama `estado` deberían evitarlo; si aun así pasa, GitHub avisa por
   correo y se reactiva con un clic en la pestaña Actions.
 - Para volver a empezar de cero, borra la rama `estado`.
+- Para cambiar la foto, descripción o nombre del bot: en **@BotFather**, `/setuserpic`,
+  `/setdescription`, `/setabouttext` o `/setname`.
+- El bot no responde a mensajes: solo envía el resumen diario.
 
 ## Estructura
 
