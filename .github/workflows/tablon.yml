@@ -2,7 +2,8 @@ name: Tablón URJC
 
 on:
   schedule:
-    - cron: "0 10 * * *"  # 10:00 UTC = 12:00 en verano / 11:00 en invierno (hora de Madrid)
+    - cron: "34 12 * * *"  # 12:34 hora de Madrid (minuto no en punto: GitHub retrasa menos)
+      timezone: "Europe/Madrid"
   workflow_dispatch:  # permite lanzarlo a mano desde la pestaña Actions
 
 permissions:

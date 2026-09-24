@@ -18,8 +18,8 @@ Funciona gratis con **GitHub Actions**: no necesita servidor.
 
 ## Cómo funciona
 
-- El workflow `.github/workflows/tablon.yml` se ejecuta cada día a las 10:00 UTC
-  (12:00 en verano / 11:00 en invierno, hora de Madrid). GitHub puede retrasarlo un rato.
+- El workflow `.github/workflows/tablon.yml` se ejecuta cada día a las 12:34 (hora de Madrid,
+  todo el año). GitHub puede retrasarlo un rato.
 - Lee el tablón desde el anuncio más reciente hacia atrás hasta encontrar uno ya enviado,
   y manda todos los nuevos en un único resumen (partido en varios mensajes si es muy largo).
 - Los IDs ya enviados se guardan en `estado.json`, en la rama **`estado`** del repo
@@ -78,7 +78,7 @@ En el repo: **Settings → Secrets and variables → Actions → New repository 
 Pestaña **Actions → Tablón URJC → Run workflow**. En ~30 s te llega "✅ Bot del Tablón URJC
 configurado". A partir de ahí, cada mañana recibirás los anuncios nuevos.
 
-Para cambiar la hora, edita la línea `cron` del workflow (va en hora UTC).
+Para cambiar la hora, edita la línea `cron` del workflow (va en hora de Madrid, según `timezone`).
 
 ## Probar en local
 
