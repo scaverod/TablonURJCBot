@@ -18,8 +18,8 @@ Funciona gratis con **GitHub Actions**: no necesita servidor.
 
 ## Cómo funciona
 
-- El workflow `.github/workflows/tablon.yml` se ejecuta cada día a las 09:00 UTC
-  (11:00 en verano / 10:00 en invierno, hora de Madrid). GitHub puede retrasarlo un rato.
+- El workflow `.github/workflows/tablon.yml` se ejecuta cada día a las 10:00 UTC
+  (12:00 en verano / 11:00 en invierno, hora de Madrid). GitHub puede retrasarlo un rato.
 - Lee el tablón desde el anuncio más reciente hacia atrás hasta encontrar uno ya enviado,
   y manda todos los nuevos en un único resumen (partido en varios mensajes si es muy largo).
 - Los IDs ya enviados se guardan en `estado.json`, en la rama **`estado`** del repo
