@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   lint:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04  # fijo: ubuntu-latest pasa a Ubuntu 26 desde el 2026-10-19
     steps:
       - uses: actions/checkout@v7
 
@@ -28,7 +28,7 @@ jobs:
           ruff format --check tests
 
   tests:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04  # fijo: ubuntu-latest pasa a Ubuntu 26 desde el 2026-10-19
     strategy:
       fail-fast: false
       matrix:
