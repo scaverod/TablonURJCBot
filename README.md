@@ -18,8 +18,10 @@ Funciona gratis con **GitHub Actions**: no necesita servidor.
 
 ## Cómo funciona
 
-- El workflow `.github/workflows/tablon.yml` se ejecuta cada día a las 12:34 (hora de Madrid,
-  todo el año). GitHub puede retrasarlo un rato.
+- El workflow `.github/workflows/tablon.yml` se lanza cada día a las 10:35 (hora de Madrid)
+  desde [cron-job.org](https://cron-job.org), que llama a la API de GitHub
+  (`workflow_dispatch`). El `cron` del propio workflow (12:34) queda de respaldo: GitHub lo
+  retrasa a veces varias horas, y si llega a ejecutarse no repite anuncios ya enviados.
 - Lee el tablón desde el anuncio más reciente hacia atrás hasta encontrar uno ya enviado,
   y manda todos los nuevos en un único resumen (partido en varios mensajes si es muy largo).
 - Los IDs ya enviados se guardan en `estado.json`, en la rama **`estado`** del repo
@@ -78,7 +80,25 @@ En el repo: **Settings → Secrets and variables → Actions → New repository 
 Pestaña **Actions → Tablón URJC → Run workflow**. En ~30 s te llega "✅ Bot del Tablón URJC
 configurado". A partir de ahí, cada mañana recibirás los anuncios nuevos.
 
-Para cambiar la hora, edita la línea `cron` del workflow (va en hora de Madrid, según `timezone`).
+Para cambiar la hora, cambia el cronjob de cron-job.org y, si quieres mover también el
+respaldo, la línea `cron` del workflow (va en hora de Madrid, según `timezone`).
+
+### 5. Lanzarlo desde cron-job.org (opcional, más puntual)
+
+El `schedule` de GitHub Actions puede llegar con horas de retraso. Para que llegue a su hora:
+
+1. Crea un token *fine-grained* en GitHub (Settings → Developer settings) solo para este repo,
+   con el permiso **Actions: Read and write**.
+2. En cron-job.org, crea un cronjob con la hora que quieras (zona Europe/Madrid):
+   ```bash
+   curl -X POST https://api.github.com/repos/<usuario>/<repo>/actions/workflows/tablon.yml/dispatches \
+     -H "Authorization: Bearer <token>" \
+     -H "Accept: application/vnd.github+json" \
+     -H "X-GitHub-Api-Version: 2026-03-10" \
+     -d '{"ref":"main"}'
+   ```
+   (Se puede pegar con "Import from cURL".) GitHub responde `200`.
+3. El token caduca: si el cronjob empieza a dar `401`, genera otro y cámbialo en cron-job.org.
 
 ## Probar en local
 
