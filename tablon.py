@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import re
 from dataclasses import dataclass
 from datetime import datetime
@@ -14,6 +15,8 @@ BASE_URL = "https://sede.urjc.es"
 TABLON_URL = f"{BASE_URL}/tablon-oficial"
 HEADERS = {"User-Agent": "Mozilla/5.0 (TablonURJC Telegram bot)"}
 DATE_FMT = "%d/%m/%Y %H:%M:%S"
+REINTENTOS = 3
+ESPERA_REINTENTO = 30  # segundos; la web a veces corta la conexión un rato
 
 @dataclass(frozen=True)
 class Anuncio:
@@ -80,6 +83,13 @@ class Tablon:
             "fecha_fin": "",
             "path": "buscar/",
         }
-        resp = await self._client.get(TABLON_URL, params=params)
-        resp.raise_for_status()
-        return parse_pagina(resp.text)
+        for intento in range(1, REINTENTOS + 1):
+            try:
+                resp = await self._client.get(TABLON_URL, params=params)
+                resp.raise_for_status()
+                return parse_pagina(resp.text)
+            except (httpx.TransportError, httpx.HTTPStatusError) as e:
+                es_4xx = isinstance(e, httpx.HTTPStatusError) and e.response.status_code < 500
+                if es_4xx or intento == REINTENTOS:
+                    raise
+                await asyncio.sleep(ESPERA_REINTENTO * intento)
